@@ -2,7 +2,6 @@
 using System.Text.Json;
 using Tederean.Apius.Extensions;
 using Tederean.Apius.Interfaces;
-using Tederean.Apius.Types;
 
 namespace Tederean.Apius.Services
 {
@@ -31,11 +30,11 @@ namespace Tederean.Apius.Services
     }
 
 
-    public void WriteData(CommunicationData communicationData)
+    public void SendCommand(ICommand command)
     {
-      communicationData.ThrowIfNull(nameof(communicationData));
+      command.ThrowIfNull(nameof(command));
 
-      var jsonString = JsonSerializer.Serialize(communicationData, _serializerOptions);
+      var jsonString = JsonSerializer.Serialize(command, command.GetType(), _serializerOptions);
 
       _serialPort.WriteLine(jsonString);
     }

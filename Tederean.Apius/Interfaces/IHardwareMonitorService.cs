@@ -9,6 +9,9 @@ namespace Tederean.Apius.Interfaces
     void Start();
 
 
-    CommunicationData GetData();
+    InitializationCommand GetInitializationCommand();
+
+
+    UpdateCommand GetUpdateCommand();
   }
 }

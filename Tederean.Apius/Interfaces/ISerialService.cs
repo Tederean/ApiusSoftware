@@ -1,14 +1,12 @@
-﻿using Tederean.Apius.Types;
-
-namespace Tederean.Apius.Interfaces
+﻿namespace Tederean.Apius.Interfaces
 {
 
   public interface ISerialService : IDisposable
   {
 
-    public void Start();
+    void Start();
 
 
-    public void WriteData(CommunicationData data);
+    void SendCommand(ICommand command);
   }
 }

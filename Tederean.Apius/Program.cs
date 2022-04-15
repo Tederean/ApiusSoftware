@@ -35,18 +35,24 @@ namespace Tederean.Apius
         WindowUtil.SetWindowVisibility(isVisible: false);
 
         using var serial = new SerialService(requestedSerialPort);
-        using var monitor = new HardwareMonitorService(); 
+        using var monitor = new HardwareMonitorService();
 
         serial.Start();
         monitor.Start();
+
+        await Task.Delay(500);
+
+        serial.SendCommand(monitor.GetInitializationCommand());
+
+        await Task.Delay(500);
 
         while (!_cancellationTokenSource.IsCancellationRequested)
         {
           await using (new FixedTime(_updateInterval))
           {
-            var data = monitor.GetData();
+            var updateCommand = monitor.GetUpdateCommand();
 
-            serial.WriteData(data);
+            serial.SendCommand(updateCommand);
           }
         }
       }
