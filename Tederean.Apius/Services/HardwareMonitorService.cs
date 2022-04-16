@@ -1,6 +1,7 @@
 ﻿using Tederean.Apius.Interfaces;
 using Tederean.Apius.Types;
 using Tederean.Apius.Extensions;
+using Tederean.Apius.Formating;
 
 namespace Tederean.Apius.Services
 {
@@ -29,15 +30,15 @@ namespace Tederean.Apius.Services
         Tile0 = "AMD Ryzen 7 5800X",
         Tile1 = "NVIDIA GeForce RTX 3070",
 
-        Chart0 = "Utilization",
-        Chart1 = "Wattage",
-        Chart2 = "Temperature",
-        Chart3 = "Memory",
+        Chart0 = "Auslastung",
+        Chart1 = "Leistung",
+        Chart2 = "Temperatur",
+        Chart3 = "Speicher",
 
-        Chart4 = "Utilization",
-        Chart5 = "Wattage",
-        Chart6 = "Temperature",
-        Chart7 = "Memory",
+        Chart4 = "Auslastung",
+        Chart5 = "Leistung",
+        Chart6 = "Temperatur",
+        Chart7 = "Speicher",
       };
     }
 
@@ -82,12 +83,12 @@ namespace Tederean.Apius.Services
         Text0 = cpuUtilization.ToString("0") + " %",
         Text1 = cpuWattage.ToString("0") + " W",
         Text2 = cpuTemperature.ToString("0") + " °C",
-        Text3 = cpuMemory.ToString("0") + " MiB",
+        Text3 = BinaryFormatter.Format(cpuMemory * 1024.0 * 1024.0, "B"),
 
         Text4 = gpuUtilization.ToString("0") + " %",
         Text5 = gpuWattage.ToString("0") + " W",
         Text6 = gpuTemperature.ToString("0") + " °C",
-        Text7 = gpuMemory.ToString("0") + " MiB",
+        Text7 = BinaryFormatter.Format(gpuMemory * 1024.0 * 1024.0, "B"),
       };
     }
 
