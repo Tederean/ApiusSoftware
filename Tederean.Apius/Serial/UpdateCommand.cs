@@ -1,12 +1,9 @@
-﻿using Tederean.Apius.Enums;
-using Tederean.Apius.Interfaces;
-
-namespace Tederean.Apius.Types
+﻿namespace Tederean.Apius.Serial
 {
-  public  class UpdateCommand : ICommand
+  public  class UpdateCommand : ISerialCommand
   {
 
-    public CommandID CommandID { get; set; }
+    public SerialCommandID CommandID { get; set; }
 
 
     public int Ratio0 { get; set; }

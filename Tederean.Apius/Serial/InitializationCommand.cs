@@ -1,13 +1,10 @@
-﻿using Tederean.Apius.Enums;
-using Tederean.Apius.Interfaces;
-
-namespace Tederean.Apius.Types
+﻿namespace Tederean.Apius.Serial
 {
 
-  public class InitializationCommand : ICommand
+  public class InitializationCommand : ISerialCommand
   {
 
-    public CommandID CommandID { get; set; }
+    public SerialCommandID CommandID { get; set; }
 
 
     public string? Tile0 { get; set; }

@@ -1,9 +1,8 @@
 ﻿using System.IO.Ports;
 using System.Text.Json;
 using Tederean.Apius.Extensions;
-using Tederean.Apius.Interfaces;
 
-namespace Tederean.Apius.Services
+namespace Tederean.Apius.Serial
 {
 
   public class SerialService : ISerialService
@@ -30,11 +29,11 @@ namespace Tederean.Apius.Services
     }
 
 
-    public void SendCommand(ICommand command)
+    public void SendCommand(ISerialCommand serialCommand)
     {
-      command.ThrowIfNull(nameof(command));
+      serialCommand.ThrowIfNull(nameof(serialCommand));
 
-      var jsonString = JsonSerializer.Serialize(command, command.GetType(), _serializerOptions);
+      var jsonString = JsonSerializer.Serialize(serialCommand, serialCommand.GetType(), _serializerOptions);
 
       _serialPort.WriteLine(jsonString);
     }
