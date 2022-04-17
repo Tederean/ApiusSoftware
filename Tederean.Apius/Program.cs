@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics;
+using Tederean.Apius.Extensions;
+using Tederean.Apius.Formating;
 using Tederean.Apius.Hardware;
 using Tederean.Apius.Interop;
 using Tederean.Apius.Serial;
@@ -37,16 +39,15 @@ namespace Tederean.Apius
       {
         WindowUtil.SetWindowVisibility(isVisible: false);
 
-
         using var serial = new SerialService(requestedSerialPort);
-        using var monitor = new HardwareService();
+        using var hardware = new HardwareService();
 
 
         serial.Start();
 
         await Task.Delay(500);
 
-        serial.SendCommand(monitor.GetInitializationCommand());
+        SendInitializationCommand(hardware, serial);
 
         await Task.Delay(500);
 
@@ -55,112 +56,92 @@ namespace Tederean.Apius
         {
           await using (new FixedTime(_updateInterval))
           {
-            var updateCommand = monitor.GetUpdateCommand();
-
-            serial.SendCommand(updateCommand);
+            SendUpdateCommand(hardware, serial);
           }
         }
       }
     }
+
+    private static void SendInitializationCommand(IHardwareService hardwareService, ISerialService serialService)
+    {
+      var initializationCommand = new InitializationCommand()
+      {
+        Tile0 = hardwareService.MainboardService?.CpuName ?? "?",
+        Tile1 = hardwareService.GraphicsCardService?.GraphicsCardName ?? "?",
+
+        Chart0 = "Auslastung",
+        Chart1 = "Leistung",
+        Chart2 = "Temperatur",
+        Chart3 = "Speicher",
+
+        Chart4 = "Auslastung",
+        Chart5 = "Leistung",
+        Chart6 = "Temperatur",
+        Chart7 = "Speicher",
+      };
+
+      serialService.SendCommand(initializationCommand);
+    }
+
+    private static void SendUpdateCommand(IHardwareService hardwareService, ISerialService serialService)
+    {
+      var hardwareInfo = hardwareService.GetHardwareInfo();
+      var updateCommand = new UpdateCommand();
+
+      var mainboardValues = hardwareInfo.MainboardValues;
+      var graphicsCardValues = hardwareInfo.GraphicsCardValues;
+
+
+      if (mainboardValues != null)
+      {
+        updateCommand.Ratio0 = ToRatio(mainboardValues.CurrentLoad_percent, mainboardValues.MaximumLoad_percent);
+        updateCommand.Ratio1 = ToRatio(mainboardValues.CurrentWattage_W, mainboardValues.MaximumWattage_W);
+        updateCommand.Ratio2 = ToRatio(mainboardValues.CurrentTemperature_C, mainboardValues.MaximumTemperature_C);
+        updateCommand.Ratio3 = ToRatio(mainboardValues.CurrentMemory_B, mainboardValues.MaximumMemory_B);
+
+        updateCommand.Text0 = mainboardValues.CurrentLoad_percent.ToString("0") + " %";
+        updateCommand.Text1 = mainboardValues.CurrentWattage_W.ToString("0") + " W";
+        updateCommand.Text2 = mainboardValues.CurrentTemperature_C.ToString("0") + " °C";
+        updateCommand.Text3 = BinaryFormatter.Format(mainboardValues.CurrentMemory_B, "B");
+      }
+      else
+      {
+        updateCommand.Text0 = string.Empty;
+        updateCommand.Text1 = string.Empty;
+        updateCommand.Text2 = string.Empty;
+        updateCommand.Text3 = string.Empty;
+      }
+
+
+      if (graphicsCardValues != null)
+      {
+        updateCommand.Ratio4 = ToRatio(graphicsCardValues.CurrentLoad_percent, graphicsCardValues.MaximumLoad_percent);
+        updateCommand.Ratio5 = ToRatio(graphicsCardValues.CurrentWattage_W, graphicsCardValues.MaximumWattage_W);
+        updateCommand.Ratio6 = ToRatio(graphicsCardValues.CurrentTemperature_C, graphicsCardValues.MaximumTemperature_C);
+        updateCommand.Ratio7 = ToRatio(graphicsCardValues.CurrentMemory_B, graphicsCardValues.MaximumMemory_B);
+
+        updateCommand.Text4 = graphicsCardValues.CurrentLoad_percent.ToString("0") + " %";
+        updateCommand.Text5 = graphicsCardValues.CurrentWattage_W.ToString("0") + " W";
+        updateCommand.Text6 = graphicsCardValues.CurrentTemperature_C.ToString("0") + " °C";
+        updateCommand.Text7 = BinaryFormatter.Format(graphicsCardValues.CurrentMemory_B, "B");
+      }
+      else
+      {
+        updateCommand.Text4 = string.Empty;
+        updateCommand.Text5 = string.Empty;
+        updateCommand.Text6 = string.Empty;
+        updateCommand.Text7 = string.Empty;
+      }
+
+
+      serialService.SendCommand(updateCommand);
+    }
+
+    private static int ToRatio(double inputValue, double maximum)
+    {
+      var mappedValue = (int)Math.Round(inputValue.Map(0.0, maximum, 0.0, 32767.0));
+
+      return mappedValue.Clamp(0, 32767);
+    }
   }
 }
-
-
-
-
-
-//public InitializationCommand GetInitializationCommand()
-//{
-//  var graphicsCardName = _nvml.DeviceGetName(_nvmlDevice);
-
-//  return new InitializationCommand()
-//  {
-//    CommandID = Enums.CommandID.Initialize,
-
-//    Tile0 = "AMD Ryzen 7 5800X",
-//    Tile1 = graphicsCardName,
-
-//    Chart0 = "Auslastung",
-//    Chart1 = "Leistung",
-//    Chart2 = "Temperatur",
-//    Chart3 = "Speicher",
-
-//    Chart4 = "Auslastung",
-//    Chart5 = "Leistung",
-//    Chart6 = "Temperatur",
-//    Chart7 = "Speicher",
-//  };
-//}
-
-//public UpdateCommand GetUpdateCommand()
-//{
-//  var cpuUtilizationMax = 100.0;
-//  var cpuWattageMax = 105.0;
-//  var cpuTemperatureMax = 105.0;
-//  var cpuMemoryMax = 32768.0;
-
-//  var cpuUtilization = _random.NextDouble() * cpuUtilizationMax;
-//  var cpuWattage = _random.NextDouble() * cpuWattageMax;
-//  var cpuTemperature = _random.NextDouble() * cpuTemperatureMax;
-//  var cpuMemory = _random.NextDouble() * cpuMemoryMax;
-
-
-
-//  var gpuUtilization = _nvml.DeviceGetUtilizationRates(_nvmlDevice);
-
-//  var powerConsumption_W = _nvml.DeviceGetPowerUsage_mW(_nvmlDevice) / 1000.0;
-//  var powerTarget_W = _nvml.DeviceGetPowerManagementLimit_mW(_nvmlDevice) / 1000.0;
-
-//  var gpuTemperature_C = _nvml.DeviceGetTemperature(_nvmlDevice, NvmlTemperatureSensor.Gpu);
-//  var gpuThrottle_C = _nvml.DeviceGetTemperatureThreshold(_nvmlDevice, NvmlTemperatureThresholds.Slowdown);
-
-//  var memoryInfo = _nvml.DeviceGetMemoryInfo(_nvmlDevice);
-
-
-
-//  var gpuUtilizationRatio = ToRatio(gpuUtilization.Gpu, 0.0, 100.0);
-//  var gpuUtilizationText = gpuUtilization.Gpu.ToString("0") + " %";
-
-//  var gpuWattageRatio = ToRatio(powerConsumption_W, 0.0, powerTarget_W);
-//  var gpuWattageText = powerConsumption_W.ToString("0") + " W";
-
-//  var gpuTemperatureRatio = ToRatio(gpuTemperature_C, 0.0, gpuThrottle_C);
-//  var gpuTemperatureText = gpuTemperature_C.ToString("0") + " °C";
-
-//  var gpuMemoryRatio = ToRatio(memoryInfo.UsedBytes, 0.0, memoryInfo.TotalBytes);
-//  var gpuMemoryText = BinaryFormatter.Format(memoryInfo.UsedBytes, "B");
-
-
-
-//  return new UpdateCommand()
-//  {
-//    CommandID = Enums.CommandID.Update,
-
-//    Ratio0 = ToRatio(cpuUtilization, 0.0, cpuUtilizationMax),
-//    Ratio1 = ToRatio(cpuWattage, 0.0, cpuWattageMax),
-//    Ratio2 = ToRatio(cpuTemperature, 0.0, cpuTemperatureMax),
-//    Ratio3 = ToRatio(cpuMemory, 0.0, cpuMemoryMax),
-
-//    Ratio4 = gpuUtilizationRatio,
-//    Ratio5 = gpuWattageRatio,
-//    Ratio6 = gpuTemperatureRatio,
-//    Ratio7 = gpuMemoryRatio,
-
-//    Text0 = cpuUtilization.ToString("0") + " %",
-//    Text1 = cpuWattage.ToString("0") + " W",
-//    Text2 = cpuTemperature.ToString("0") + " °C",
-//    Text3 = BinaryFormatter.Format(cpuMemory * 1024.0 * 1024.0, "B"),
-
-//    Text4 = gpuUtilizationText,
-//    Text5 = gpuWattageText,
-//    Text6 = gpuTemperatureText,
-//    Text7 = gpuMemoryText,
-//  };
-//}
-
-//private int ToRatio(double inputValue, double inputMinimum, double inputMaximum)
-//{
-//  var mappedValue = (int)Math.Round(inputValue.Map(inputMinimum, inputMaximum, 0.0, 32767.0));
-
-//  return mappedValue.Clamp(0, 32767);
-//}

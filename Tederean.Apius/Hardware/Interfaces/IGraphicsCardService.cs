@@ -6,6 +6,7 @@
 
     string GraphicsCardName { get; }
 
-    GraphicsCardValues GraphicsCardValues { get; }
+
+    GraphicsCardValues GetGraphicsCardValues();
   }
 }

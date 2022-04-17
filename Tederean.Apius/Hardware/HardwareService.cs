@@ -16,7 +16,10 @@ namespace Tederean.Apius.Hardware
 
     public HardwareService()
     {
-      MainboardService = new DemoMainboardService();
+      if (OperatingSystem.IsLinux())
+      {
+        MainboardService = new LinuxMainboardService();
+      }
 
       if (Nvml.TryCreateInstance(out _nvml))
       {
@@ -24,7 +27,7 @@ namespace Tederean.Apius.Hardware
 
         if (firstGraphicsCard != null)
         {
-          GraphicsCardService = new NvidiaGraphicsCardService(_nvml, firstGraphicsCard);
+          GraphicsCardService = new ProprietaryNvidiaGraphicsCardService(_nvml, firstGraphicsCard);
         }
       }
     }
@@ -39,8 +42,8 @@ namespace Tederean.Apius.Hardware
     {
       return new HardwareValues()
       {
-        MainboardValues = MainboardService?.MainboardValues,
-        GraphicsCardValues = GraphicsCardService?.GraphicsCardValues,
+        MainboardValues = MainboardService?.GetMainboardValues(),
+        GraphicsCardValues = GraphicsCardService?.GetGraphicsCardValues(),
       };
     }
   }

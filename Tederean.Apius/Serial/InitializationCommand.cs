@@ -4,7 +4,7 @@
   public class InitializationCommand : ISerialCommand
   {
 
-    public SerialCommandID CommandID { get; set; }
+    public SerialCommandID CommandID => SerialCommandID.Initialize;
 
 
     public string? Tile0 { get; set; }

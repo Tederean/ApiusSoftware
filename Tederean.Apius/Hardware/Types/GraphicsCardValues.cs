@@ -4,26 +4,26 @@
   public class GraphicsCardValues
   {
 
-    public double CurrentUtilization { get; set; }
+    public double CurrentLoad_percent { get; set; }
 
-    public double MaximumUtilization { get; set; }
-
-
-
-    public double CurrentWattage { get; set; }
-
-    public double MaximumWattage { get; set; }
+    public double MaximumLoad_percent { get; set; }
 
 
 
-    public double CurrentTemperature { get; set; }
+    public double CurrentWattage_W { get; set; }
 
-    public double MaximumTemperature { get; set; }
+    public double MaximumWattage_W { get; set; }
 
 
 
-    public double CurrentMemory { get; set; }
+    public double CurrentTemperature_C { get; set; }
 
-    public double MaximumMemory { get; set; }
+    public double MaximumTemperature_C { get; set; }
+
+
+
+    public double CurrentMemory_B { get; set; }
+
+    public double MaximumMemory_B { get; set; }
   }
 }

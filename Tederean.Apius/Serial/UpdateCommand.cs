@@ -3,7 +3,7 @@
   public  class UpdateCommand : ISerialCommand
   {
 
-    public SerialCommandID CommandID { get; set; }
+    public SerialCommandID CommandID => SerialCommandID.Update;
 
 
     public int Ratio0 { get; set; }

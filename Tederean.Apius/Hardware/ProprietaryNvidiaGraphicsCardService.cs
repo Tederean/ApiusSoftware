@@ -4,7 +4,7 @@ using Tederean.Apius.Interop.Nvml;
 namespace Tederean.Apius.Hardware
 {
 
-  public class NvidiaGraphicsCardService : IGraphicsCardService
+  public class ProprietaryNvidiaGraphicsCardService : IGraphicsCardService
   {
 
     private readonly Nvml _nvml;
@@ -12,22 +12,22 @@ namespace Tederean.Apius.Hardware
     private readonly NvmlDevice _nvmlDevice;
 
 
-    public string GraphicsCardName => _nvml.DeviceGetName(_nvmlDevice);
-
-    public GraphicsCardValues GraphicsCardValues => GetGraphicsCardValues();
+    public string GraphicsCardName { get; }
 
 
-    public NvidiaGraphicsCardService(Nvml nvml, NvmlDevice nvmlDevice)
+    public ProprietaryNvidiaGraphicsCardService(Nvml nvml, NvmlDevice nvmlDevice)
     {
       nvml.ThrowIfNull(nameof(nvml));
       nvmlDevice.ThrowIfNull(nameof(nvmlDevice));
 
       _nvml = nvml;
       _nvmlDevice = nvmlDevice;
+
+      GraphicsCardName = GetGraphicsCardName();
     }
 
 
-    private GraphicsCardValues GetGraphicsCardValues()
+    public GraphicsCardValues GetGraphicsCardValues()
     {
       var gpuUtilization = _nvml.DeviceGetUtilizationRates(_nvmlDevice);
 
@@ -42,15 +42,26 @@ namespace Tederean.Apius.Hardware
 
       return new GraphicsCardValues()
       {
-        CurrentUtilization = gpuUtilization.Gpu,
-        MaximumUtilization = 100.0,
-        CurrentWattage = powerConsumption_W,
-        MaximumWattage = powerTarget_W,
-        CurrentTemperature = gpuTemperature_C,
-        MaximumTemperature = gpuThrottle_C,
-        CurrentMemory = memoryInfo.UsedBytes,
-        MaximumMemory = memoryInfo.TotalBytes,
+        CurrentLoad_percent = gpuUtilization.Gpu,
+        MaximumLoad_percent = 100.0,
+        CurrentWattage_W = powerConsumption_W,
+        MaximumWattage_W = powerTarget_W,
+        CurrentTemperature_C = gpuTemperature_C,
+        MaximumTemperature_C = gpuThrottle_C,
+        CurrentMemory_B = memoryInfo.UsedBytes,
+        MaximumMemory_B = memoryInfo.TotalBytes,
       };
+    }
+
+
+    private string GetGraphicsCardName()
+    {
+      var graphicsCardName = _nvml.DeviceGetName(_nvmlDevice);
+
+      if (!graphicsCardName.StartsWith("NVIDIA"))
+        graphicsCardName = "NVIDIA " + graphicsCardName;
+
+      return graphicsCardName;
     }
   }
 }

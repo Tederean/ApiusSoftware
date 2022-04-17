@@ -4,6 +4,6 @@
   public interface ISerialCommand
   {
 
-    SerialCommandID CommandID { get; set; }
+    SerialCommandID CommandID { get; }
   }
 }

@@ -16,6 +16,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Hardware\DemoMainboardService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove=".editorconfig" />
   </ItemGroup>
 
