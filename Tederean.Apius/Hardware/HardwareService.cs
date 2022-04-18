@@ -1,4 +1,5 @@
-﻿using Tederean.Apius.Interop.Nvml;
+﻿using Tederean.Apius.Interop.LmSensors;
+using Tederean.Apius.Interop.Nvml;
 
 namespace Tederean.Apius.Hardware
 {
@@ -7,6 +8,8 @@ namespace Tederean.Apius.Hardware
   {
 
     private Nvml? _nvml;
+
+    private LmSensors? _lmSensors;
 
 
     public IMainboardService? MainboardService { get; set; }
@@ -18,7 +21,9 @@ namespace Tederean.Apius.Hardware
     {
       if (OperatingSystem.IsLinux())
       {
-        MainboardService = new LinuxMainboardService();
+        LmSensors.TryCreateInstance(out _lmSensors);
+
+        MainboardService = new LinuxMainboardService(_lmSensors);
       }
 
       if (Nvml.TryCreateInstance(out _nvml))
@@ -35,18 +40,19 @@ namespace Tederean.Apius.Hardware
     public void Dispose()
     {
       _nvml?.Dispose();
+      _lmSensors?.Dispose();
 
       MainboardService?.Dispose();
       GraphicsCardService?.Dispose();
     }
 
 
-    public HardwareValues GetHardwareInfo()
+    public HardwareSensors GetHardwareInfo()
     {
-      return new HardwareValues()
+      return new HardwareSensors()
       {
-        MainboardValues = MainboardService?.GetMainboardValues(),
-        GraphicsCardValues = GraphicsCardService?.GetGraphicsCardValues(),
+        MainboardValues = MainboardService?.GetMainboardSensors(),
+        GraphicsCardValues = GraphicsCardService?.GetGraphicsCardSensors(),
       };
     }
   }

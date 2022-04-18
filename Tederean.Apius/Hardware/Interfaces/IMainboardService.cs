@@ -7,6 +7,6 @@
     string CpuName { get; }
 
 
-    MainboardValues GetMainboardValues();
+    MainboardSensors GetMainboardSensors();
   }
 }

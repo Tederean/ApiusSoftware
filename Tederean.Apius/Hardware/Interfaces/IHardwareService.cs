@@ -9,6 +9,6 @@
     IGraphicsCardService? GraphicsCardService { get; }
 
 
-    HardwareValues GetHardwareInfo();
+    HardwareSensors GetHardwareInfo();
   }
 }

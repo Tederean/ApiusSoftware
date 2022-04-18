@@ -31,7 +31,7 @@ namespace Tederean.Apius.Hardware
     }
 
 
-    public GraphicsCardValues GetGraphicsCardValues()
+    public GraphicsCardSensors GetGraphicsCardSensors()
     {
       var gpuUtilization = _nvml.DeviceGetUtilizationRates(_nvmlDevice);
 
@@ -44,16 +44,15 @@ namespace Tederean.Apius.Hardware
       var memoryInfo = _nvml.DeviceGetMemoryInfo(_nvmlDevice);
 
 
-      return new GraphicsCardValues()
+      return new GraphicsCardSensors()
       {
-        CurrentLoad_percent = gpuUtilization.Gpu,
-        MaximumLoad_percent = 100.0,
-        CurrentWattage_W = powerConsumption_W,
-        MaximumWattage_W = powerTarget_W,
-        CurrentTemperature_C = gpuTemperature_C,
-        MaximumTemperature_C = gpuThrottle_C,
-        CurrentMemory_B = memoryInfo.UsedBytes,
-        MaximumMemory_B = memoryInfo.TotalBytes,
+        Load_percent = new Sensor(gpuUtilization.Gpu, 0.0, 100.0),
+
+        Wattage_W = new Sensor(powerConsumption_W, 0.0, powerTarget_W),
+
+        Temperature_C = new Sensor(gpuTemperature_C, 0.0, gpuThrottle_C),
+
+        Memory_B = new Sensor(memoryInfo.UsedBytes, 0.0, memoryInfo.TotalBytes),
       };
     }
 

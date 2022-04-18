@@ -51,7 +51,7 @@ namespace Tederean.Apius.Hardware
     }
 
 
-    public void GetWattageValues(MainboardValues mainboardValues)
+    public void GetWattageValues(MainboardSensors mainboardSensors)
     {
       var lastPackageEnergySamples = _lastPackageEnergySamples;
       var currentPackageEnergySamples = _lastPackageEnergySamples = ReadPackageEnergy();
@@ -71,9 +71,7 @@ namespace Tederean.Apius.Hardware
 
         }).Sum();
 
-
-        mainboardValues.CurrentWattage_W = currentWattage_W;
-        mainboardValues.MaximumWattage_W = 105.0;
+        mainboardSensors.Wattage_W = new Sensor(currentWattage_W, 0.0, 105.0);
       }
     }
 

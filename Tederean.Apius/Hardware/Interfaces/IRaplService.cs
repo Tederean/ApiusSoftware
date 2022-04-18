@@ -4,6 +4,6 @@
   public interface IRaplService : IDisposable
   {
 
-    void GetWattageValues(MainboardValues mainboardValues);
+    void GetWattageValues(MainboardSensors mainboardValues);
   }
 }

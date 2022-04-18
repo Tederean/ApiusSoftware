@@ -1,4 +1,5 @@
 ﻿using Tederean.Apius.Interop.LibC;
+using Tederean.Apius.Interop.LmSensors;
 
 namespace Tederean.Apius.Hardware
 {
@@ -8,6 +9,8 @@ namespace Tederean.Apius.Hardware
 
     private readonly IRaplService? _raplService;
 
+    private readonly LmSensors? _lmSenors;
+
 
     private CpuLoadSample? _lastCpuLoadSample;
 
@@ -15,8 +18,10 @@ namespace Tederean.Apius.Hardware
     public string CpuName { get; }
 
 
-    public LinuxMainboardService()
+    public LinuxMainboardService(LmSensors? lmSenors)
     {
+      _lmSenors = lmSenors;
+
       var cpuinfo = File.ReadAllLines("/proc/cpuinfo");
 
       var vendorName = GetCpuinfoValue(cpuinfo.First(entry => entry.StartsWith("vendor_id")));
@@ -39,21 +44,31 @@ namespace Tederean.Apius.Hardware
     }
 
 
-    public MainboardValues GetMainboardValues()
+    public MainboardSensors GetMainboardSensors()
     {
-      var mainboardValues = new MainboardValues();
+      var mainboardSensors = new MainboardSensors();
 
-      GetRamValues(mainboardValues);
+      GetRamValues(mainboardSensors);
 
-      GetLoadValues(mainboardValues);
+      GetLoadValues(mainboardSensors);
 
-      _raplService?.GetWattageValues(mainboardValues);
+      _raplService?.GetWattageValues(mainboardSensors);
 
-      return mainboardValues;
+      GetTemperatureValues(mainboardSensors);
+
+      return mainboardSensors;
     }
 
 
-    private void GetLoadValues(MainboardValues mainboardValues)
+    private void GetTemperatureValues(MainboardSensors mainboardSensors)
+    {
+      if (_lmSenors != null)
+      {
+
+      }
+    }
+
+    private void GetLoadValues(MainboardSensors mainboardSensors)
     {
       var procStat = File.ReadAllLines("/proc/stat");
       var jiffieValues = procStat.First().Split(' ', StringSplitOptions.RemoveEmptyEntries).Skip(1).Select(value => long.Parse(value)).ToArray();
@@ -72,13 +87,14 @@ namespace Tederean.Apius.Hardware
 
         if (deltaTotalJiffies != 0)
         {
-          mainboardValues.CurrentLoad_percent = (deltaWorkJiffies / deltaTotalJiffies) * 100.0;
-          mainboardValues.MaximumLoad_percent = 100.0;
+          var loadPercent = (deltaWorkJiffies / deltaTotalJiffies) * 100.0;
+
+          mainboardSensors.Load_percent = new Sensor(loadPercent, 0.0, 100.0);
         }
       }
     }
 
-    private void GetRamValues(MainboardValues mainboardValues)
+    private void GetRamValues(MainboardSensors mainboardSensors)
     {
       var memoryInfo = File.ReadAllLines("/proc/meminfo");
 
@@ -88,9 +104,7 @@ namespace Tederean.Apius.Hardware
 
       var usedMemory_kB = totalMemory_kB - freeMemory_kB - cachedMemory_kB;
 
-
-      mainboardValues.CurrentMemory_B = usedMemory_kB * 1024.0;
-      mainboardValues.MaximumMemory_B = totalMemory_kB * 1024.0;
+      mainboardSensors.Memory_B = new Sensor(usedMemory_kB * 1024.0, 0.0, totalMemory_kB * 1024.0);
     }
 
 

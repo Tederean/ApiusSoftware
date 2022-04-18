@@ -67,8 +67,8 @@ namespace Tederean.Apius
     {
       var initializationCommand = new InitializationCommand()
       {
-        Tile0 = hardwareService.MainboardService?.CpuName ?? "?",
-        Tile1 = hardwareService.GraphicsCardService?.GraphicsCardName ?? "?",
+        Tile0 = hardwareService.MainboardService?.CpuName ?? "Prozessor & Mainboard",
+        Tile1 = hardwareService.GraphicsCardService?.GraphicsCardName ?? "Grafikkarte",
 
         Chart0 = "Auslastung",
         Chart1 = "Leistung",
@@ -87,60 +87,98 @@ namespace Tederean.Apius
     private static void SendUpdateCommand(IHardwareService hardwareService, ISerialService serialService)
     {
       var hardwareInfo = hardwareService.GetHardwareInfo();
-      var updateCommand = new UpdateCommand();
+      var updateCommand = new UpdateCommand()
+      {
+        Text0 = string.Empty,
+        Text1 = string.Empty,
+        Text2 = string.Empty,
+        Text3 = string.Empty,
+
+        Text4 = string.Empty,
+        Text5 = string.Empty,
+        Text6 = string.Empty,
+        Text7 = string.Empty,
+      };
+
 
       var mainboardValues = hardwareInfo.MainboardValues;
       var graphicsCardValues = hardwareInfo.GraphicsCardValues;
 
-
       if (mainboardValues != null)
       {
-        updateCommand.Ratio0 = ToRatio(mainboardValues.CurrentLoad_percent, mainboardValues.MaximumLoad_percent);
-        updateCommand.Ratio1 = ToRatio(mainboardValues.CurrentWattage_W, mainboardValues.MaximumWattage_W);
-        updateCommand.Ratio2 = ToRatio(mainboardValues.CurrentTemperature_C, mainboardValues.MaximumTemperature_C);
-        updateCommand.Ratio3 = ToRatio(mainboardValues.CurrentMemory_B, mainboardValues.MaximumMemory_B);
+        var load_percent = mainboardValues.Load_percent;
+        var wattage_W = mainboardValues.Wattage_W;
+        var temperature_C = mainboardValues.Temperature_C;
+        var memory_B = mainboardValues.Memory_B;
 
-        updateCommand.Text0 = mainboardValues.CurrentLoad_percent.ToString("0") + " %";
-        updateCommand.Text1 = mainboardValues.CurrentWattage_W.ToString("0") + " W";
-        updateCommand.Text2 = mainboardValues.CurrentTemperature_C.ToString("0") + " °C";
-        updateCommand.Text3 = BinaryFormatter.Format(mainboardValues.CurrentMemory_B, "B");
-      }
-      else
-      {
-        updateCommand.Text0 = string.Empty;
-        updateCommand.Text1 = string.Empty;
-        updateCommand.Text2 = string.Empty;
-        updateCommand.Text3 = string.Empty;
+
+        if (load_percent != null)
+        {
+          updateCommand.Ratio0 = ToRatio(load_percent);
+          updateCommand.Text0 = load_percent.Value.ToString("0") + " %";
+        }
+
+        if (wattage_W != null)
+        {
+          updateCommand.Ratio1 = ToRatio(wattage_W);
+          updateCommand.Text1 = wattage_W.Value.ToString("0") + " W";
+        }
+
+        if (temperature_C != null)
+        {
+          updateCommand.Ratio2 = ToRatio(temperature_C);
+          updateCommand.Text2 = temperature_C.Value.ToString("0") + " °C";
+        }
+
+        if (memory_B != null)
+        {
+          updateCommand.Ratio3 = ToRatio(memory_B);
+          updateCommand.Text3 = BinaryFormatter.Format(memory_B.Value, "B");
+        }
       }
 
 
       if (graphicsCardValues != null)
       {
-        updateCommand.Ratio4 = ToRatio(graphicsCardValues.CurrentLoad_percent, graphicsCardValues.MaximumLoad_percent);
-        updateCommand.Ratio5 = ToRatio(graphicsCardValues.CurrentWattage_W, graphicsCardValues.MaximumWattage_W);
-        updateCommand.Ratio6 = ToRatio(graphicsCardValues.CurrentTemperature_C, graphicsCardValues.MaximumTemperature_C);
-        updateCommand.Ratio7 = ToRatio(graphicsCardValues.CurrentMemory_B, graphicsCardValues.MaximumMemory_B);
+        var load_percent = graphicsCardValues.Load_percent;
+        var wattage_W = graphicsCardValues.Wattage_W;
+        var temperature_C = graphicsCardValues.Temperature_C;
+        var memory_B = graphicsCardValues.Memory_B;
 
-        updateCommand.Text4 = graphicsCardValues.CurrentLoad_percent.ToString("0") + " %";
-        updateCommand.Text5 = graphicsCardValues.CurrentWattage_W.ToString("0") + " W";
-        updateCommand.Text6 = graphicsCardValues.CurrentTemperature_C.ToString("0") + " °C";
-        updateCommand.Text7 = BinaryFormatter.Format(graphicsCardValues.CurrentMemory_B, "B");
-      }
-      else
-      {
-        updateCommand.Text4 = string.Empty;
-        updateCommand.Text5 = string.Empty;
-        updateCommand.Text6 = string.Empty;
-        updateCommand.Text7 = string.Empty;
+
+        if (load_percent != null)
+        {
+          updateCommand.Ratio4 = ToRatio(load_percent);
+          updateCommand.Text4 = load_percent.Value.ToString("0") + " %";
+        }
+
+        if (wattage_W != null)
+        {
+          updateCommand.Ratio5 = ToRatio(wattage_W);
+          updateCommand.Text5 = wattage_W.Value.ToString("0") + " W";
+        }
+
+        if (temperature_C != null)
+        {
+          updateCommand.Ratio6 = ToRatio(temperature_C);
+          updateCommand.Text6 = temperature_C.Value.ToString("0") + " °C";
+        }
+
+        if (memory_B != null)
+        {
+          updateCommand.Ratio7 = ToRatio(memory_B);
+          updateCommand.Text7 = BinaryFormatter.Format(memory_B.Value, "B");
+        }
       }
 
 
       serialService.SendCommand(updateCommand);
     }
 
-    private static int ToRatio(double inputValue, double maximum)
+
+    private static int ToRatio(Sensor sensor)
     {
-      var mappedValue = (int)Math.Round(inputValue.Map(0.0, maximum, 0.0, 32767.0));
+      var mappedValue = (int)Math.Round(sensor.Value.Map(sensor.Minimum, sensor.Maximum, 0.0, 32767.0));
 
       return mappedValue.Clamp(0, 32767);
     }
