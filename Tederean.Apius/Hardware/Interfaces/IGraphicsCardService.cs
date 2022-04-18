@@ -1,7 +1,7 @@
 ﻿namespace Tederean.Apius.Hardware
 {
 
-  public interface IGraphicsCardService
+  public interface IGraphicsCardService : IDisposable
   {
 
     string GraphicsCardName { get; }

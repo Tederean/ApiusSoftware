@@ -44,6 +44,7 @@ namespace Tederean.Apius
 
 
         serial.Start();
+        hardware.GetHardwareInfo();
 
         await Task.Delay(500);
 

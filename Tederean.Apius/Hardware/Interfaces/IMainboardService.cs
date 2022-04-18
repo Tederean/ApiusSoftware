@@ -1,7 +1,7 @@
 ﻿namespace Tederean.Apius.Hardware
 {
 
-  public interface IMainboardService
+  public interface IMainboardService : IDisposable
   {
 
     string CpuName { get; }

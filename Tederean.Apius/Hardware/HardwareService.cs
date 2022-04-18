@@ -35,6 +35,9 @@ namespace Tederean.Apius.Hardware
     public void Dispose()
     {
       _nvml?.Dispose();
+
+      MainboardService?.Dispose();
+      GraphicsCardService?.Dispose();
     }
 
 

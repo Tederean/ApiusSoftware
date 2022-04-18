@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Tederean.Apius.Interop.LibC;
+﻿using Tederean.Apius.Interop.LibC;
 
 namespace Tederean.Apius.Hardware
 {
@@ -7,12 +6,10 @@ namespace Tederean.Apius.Hardware
   public class LinuxMainboardService : IMainboardService
   {
 
-    private readonly CpuVendor _cpuVendor;
-
-    private readonly bool _raplSupport;
+    private readonly IRaplService? _raplService;
 
 
-    private CpuLoadSample? _LastCpuLoadSample;
+    private CpuLoadSample? _lastCpuLoadSample;
 
 
     public string CpuName { get; }
@@ -25,11 +22,20 @@ namespace Tederean.Apius.Hardware
       var vendorName = GetCpuinfoValue(cpuinfo.First(entry => entry.StartsWith("vendor_id")));
       var cpuBrandName = GetCpuinfoValue(cpuinfo.First(entry => entry.StartsWith("model name")));
       var cpuFlags = GetCpuinfoValue(cpuinfo.First(entry => entry.StartsWith("flags"))).Split(' ');
-
-      _raplSupport = cpuFlags.Contains("rapl") && LibC.IsRoot(); // Access to rapl interface requires root.
-      _cpuVendor = CpuUtils.GetCpuVendor(vendorName);
+      var cpuVendor = CpuUtils.GetCpuVendor(vendorName);
+      var virtualCores = cpuinfo.Where(entry => entry.StartsWith("processor")).Select(line => int.Parse(GetCpuinfoValue(line))).ToArray();
 
       CpuName = CpuUtils.GetCpuName(cpuBrandName);
+
+      if (cpuVendor == CpuVendor.AMD && cpuFlags.Contains("rapl") && LibC.IsRoot())
+      {
+        _raplService = new LinuxAmdRaplService(virtualCores);
+      }
+    }
+
+    public void Dispose()
+    {
+      _raplService?.Dispose();
     }
 
 
@@ -40,6 +46,8 @@ namespace Tederean.Apius.Hardware
       GetRamValues(mainboardValues);
 
       GetLoadValues(mainboardValues);
+
+      _raplService?.GetWattageValues(mainboardValues);
 
       return mainboardValues;
     }
@@ -53,8 +61,8 @@ namespace Tederean.Apius.Hardware
       var totalJiffies = jiffieValues.Sum();
       var workJiffies = jiffieValues.Take(3).Sum();
 
-      var lastCpuLoadSample = _LastCpuLoadSample;
-      var currentCpuLoadSample = _LastCpuLoadSample = new CpuLoadSample(workJiffies, totalJiffies);
+      var lastCpuLoadSample = _lastCpuLoadSample;
+      var currentCpuLoadSample = _lastCpuLoadSample = new CpuLoadSample(workJiffies, totalJiffies);
 
 
       if (lastCpuLoadSample != null)

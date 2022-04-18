@@ -26,6 +26,10 @@ namespace Tederean.Apius.Hardware
       GraphicsCardName = GetGraphicsCardName();
     }
 
+    public void Dispose()
+    {
+    }
+
 
     public GraphicsCardValues GetGraphicsCardValues()
     {
