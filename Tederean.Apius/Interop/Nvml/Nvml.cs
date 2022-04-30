@@ -177,47 +177,47 @@ namespace Tederean.Apius.Interop.Nvml
 
 
 
-    [DllImport(NativeLibraryResolver.NvmlLibraryPlaceholder, EntryPoint = "nvmlInit_v2")]
+    [DllImport(NativeLibraryResolver.NvmlLibrary, EntryPoint = "nvmlInit_v2")]
     private static extern NvmlReturn NvmlInitV2();
 
 
-    [DllImport(NativeLibraryResolver.NvmlLibraryPlaceholder, EntryPoint = "nvmlShutdown")]
+    [DllImport(NativeLibraryResolver.NvmlLibrary, EntryPoint = "nvmlShutdown")]
     private static extern NvmlReturn NvmlShutdown();
 
 
-    [DllImport(NativeLibraryResolver.NvmlLibraryPlaceholder, CharSet = CharSet.Ansi, EntryPoint = "nvmlDeviceGetCount_v2")]
+    [DllImport(NativeLibraryResolver.NvmlLibrary, CharSet = CharSet.Ansi, EntryPoint = "nvmlDeviceGetCount_v2")]
     private static extern NvmlReturn NvmlDeviceGetCountV2(out uint deviceCount);
 
 
-    [DllImport(NativeLibraryResolver.NvmlLibraryPlaceholder, EntryPoint = "nvmlDeviceGetHandleByIndex_v2")]
+    [DllImport(NativeLibraryResolver.NvmlLibrary, EntryPoint = "nvmlDeviceGetHandleByIndex_v2")]
     private static extern NvmlReturn NvmlDeviceGetHandleByIndex(uint index, out IntPtr device);
 
 
-    [DllImport(NativeLibraryResolver.NvmlLibraryPlaceholder, CharSet = CharSet.Ansi, EntryPoint = "nvmlDeviceGetName")]
+    [DllImport(NativeLibraryResolver.NvmlLibrary, CharSet = CharSet.Ansi, EntryPoint = "nvmlDeviceGetName")]
     private static extern NvmlReturn NvmlDeviceGetName(IntPtr device, [Out, MarshalAs(UnmanagedType.LPArray)] byte[] name, uint length);
 
 
-    [DllImport(NativeLibraryResolver.NvmlLibraryPlaceholder, CharSet = CharSet.Ansi, EntryPoint = "nvmlDeviceGetUtilizationRates")]
+    [DllImport(NativeLibraryResolver.NvmlLibrary, CharSet = CharSet.Ansi, EntryPoint = "nvmlDeviceGetUtilizationRates")]
     private static extern NvmlReturn NvmlDeviceGetUtilizationRates(IntPtr device, out NvmlUtilization utilization);
 
 
-    [DllImport(NativeLibraryResolver.NvmlLibraryPlaceholder, CharSet = CharSet.Ansi, EntryPoint = "nvmlDeviceGetMemoryInfo")]
+    [DllImport(NativeLibraryResolver.NvmlLibrary, CharSet = CharSet.Ansi, EntryPoint = "nvmlDeviceGetMemoryInfo")]
     private static extern NvmlReturn NvmlDeviceGetMemoryInfo(IntPtr device, out NvmlMemory memory);
 
 
-    [DllImport(NativeLibraryResolver.NvmlLibraryPlaceholder, CharSet = CharSet.Ansi, EntryPoint = "nvmlDeviceGetPowerUsage")]
+    [DllImport(NativeLibraryResolver.NvmlLibrary, CharSet = CharSet.Ansi, EntryPoint = "nvmlDeviceGetPowerUsage")]
     private static extern NvmlReturn NvmlDeviceGetPowerUsage(IntPtr device, out uint power_mW);
 
 
-    [DllImport(NativeLibraryResolver.NvmlLibraryPlaceholder, CharSet = CharSet.Ansi, EntryPoint = "nvmlDeviceGetPowerManagementLimit")]
+    [DllImport(NativeLibraryResolver.NvmlLibrary, CharSet = CharSet.Ansi, EntryPoint = "nvmlDeviceGetPowerManagementLimit")]
     private static extern NvmlReturn NvmlDeviceGetPowerManagementLimit_mW(IntPtr device, out uint limit_mW);
 
 
-    [DllImport(NativeLibraryResolver.NvmlLibraryPlaceholder, CharSet = CharSet.Ansi, EntryPoint = "nvmlDeviceGetTemperatureThreshold")]
+    [DllImport(NativeLibraryResolver.NvmlLibrary, CharSet = CharSet.Ansi, EntryPoint = "nvmlDeviceGetTemperatureThreshold")]
     private static extern NvmlReturn NvmlDeviceGetTemperatureThreshold(IntPtr device, NvmlTemperatureThresholds thresholdType, out uint temperature_C);
 
 
-    [DllImport(NativeLibraryResolver.NvmlLibraryPlaceholder, EntryPoint = "nvmlDeviceGetTemperature")]
+    [DllImport(NativeLibraryResolver.NvmlLibrary, EntryPoint = "nvmlDeviceGetTemperature")]
     private static extern NvmlReturn NvmlDeviceGetTemperature(IntPtr device, NvmlTemperatureSensor sensorType, out uint temperature_C);
 
 

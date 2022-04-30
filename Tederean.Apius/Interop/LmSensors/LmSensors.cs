@@ -52,13 +52,15 @@ namespace Tederean.Apius.Interop.LmSensors
 
 
 
-    [DllImport("sensors", EntryPoint = "sensors_init")]
+    [DllImport(NativeLibraryResolver.LmSensorsLibrary, EntryPoint = "sensors_init")]
     private static extern int SensorsInit(IntPtr fileHandle);
 
-    [DllImport("sensors", EntryPoint = "sensors_cleanup")]
+    [DllImport(NativeLibraryResolver.LmSensorsLibrary, EntryPoint = "sensors_cleanup")]
     private static extern void SensorsCleanup();
 
 
+    // https://github.com/paroj/sensors.py/blob/master/sensors.py
+    // code /usr/include/sensors/sensors.h
 
     private void ThrowIfDisposed()
     {

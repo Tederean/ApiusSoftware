@@ -7,11 +7,22 @@ namespace Tederean.Apius.Interop
   public static class NativeLibraryResolver
   {
 
-    public const string NvmlLibraryPlaceholder = "Nvidia Management Library";
+    public const string NvmlLibrary = "Nvidia Management Library";
 
     private const string NvmlWindowsLibraryName = "nvml.dll";
 
     private const string NvmlLinuxLibraryName = "libnvidia-ml.so";
+
+
+    public const string LmSensorsLibrary = "Lm Sensors Library";
+
+    private const string LmSensorsLinuxLibraryName = "libsensors.so";
+
+
+    public const string LibCLibrary = "LibC Library";
+
+    private const string LibCLinuxLibraryName = "libc.so";
+
 
 
     public static void Initialize()
@@ -24,17 +35,27 @@ namespace Tederean.Apius.Interop
     {
       if (OperatingSystem.IsWindows())
       {
-        if (libraryName == NvmlLibraryPlaceholder && NativeLibrary.TryLoad(NvmlWindowsLibraryName, out IntPtr handle))
+        if (libraryName == NvmlLibrary && NativeLibrary.TryLoad(NvmlWindowsLibraryName, out IntPtr nvmlHandle))
         {
-          return handle;
+          return nvmlHandle;
         }
       }
 
       if (OperatingSystem.IsLinux())
       {
-        if (libraryName == NvmlLibraryPlaceholder && NativeLibrary.TryLoad(NvmlLinuxLibraryName, out IntPtr handle))
+        if (libraryName == NvmlLibrary && NativeLibrary.TryLoad(NvmlLinuxLibraryName, out IntPtr nvmlHandle))
         {
-          return handle;
+          return nvmlHandle;
+        }
+
+        if (libraryName == LmSensorsLibrary && NativeLibrary.TryLoad(LmSensorsLinuxLibraryName, out IntPtr lmSensorsHandle))
+        {
+          return lmSensorsHandle;
+        }
+
+        if (libraryName == LibCLibrary && NativeLibrary.TryLoad(LibCLinuxLibraryName, out IntPtr libcHandle))
+        {
+          return libcHandle;
         }
       }
 

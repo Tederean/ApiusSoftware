@@ -6,7 +6,7 @@ namespace Tederean.Apius.Interop.LibC
   public static class LibC
   {
 
-    [DllImport("libc", EntryPoint = "getuid")]
+    [DllImport(NativeLibraryResolver.LibCLibrary, EntryPoint = "getuid")]
     public static extern uint GetUid();
 
 
