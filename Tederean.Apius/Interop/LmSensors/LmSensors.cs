@@ -14,7 +14,7 @@ namespace Tederean.Apius.Interop.LmSensors
     {
       try
       {
-        if (SensorsInit(IntPtr.Zero) == 0)
+        if (Initialize(IntPtr.Zero) == 0)
         {
           lmSensors = new LmSensors();
           return true;
@@ -36,7 +36,7 @@ namespace Tederean.Apius.Interop.LmSensors
     {
       _disposed = true;
 
-      SensorsCleanup();
+      Cleanup();
     }
 
     public void Dispose()
@@ -45,22 +45,53 @@ namespace Tederean.Apius.Interop.LmSensors
       {
         _disposed = true;
 
-        SensorsCleanup();
+        Cleanup();
         GC.SuppressFinalize(this);
       }
     }
 
+    public SensorsChipName[] GetDetectedChipNames()
+    {
+      ThrowIfDisposed();
+
+      var list = new List<SensorsChipName>();
+
+      SensorsChipName? chipName;
+      int counter = 0;
+
+      while ((chipName = GetSensorChipName(GetDetectedChips(IntPtr.Zero, ref counter))).HasValue)
+      {
+        list.Add(chipName.Value);
+      }
+
+      return list.ToArray();
+    }
+
+
+    private SensorsChipName? GetSensorChipName(IntPtr pointer)
+    {
+      if (pointer != IntPtr.Zero)
+      {
+        return Marshal.PtrToStructure<SensorsChipName>(pointer);
+      }
+
+      return null;
+    }
 
 
     [DllImport(NativeLibraryResolver.LmSensorsLibrary, EntryPoint = "sensors_init")]
-    private static extern int SensorsInit(IntPtr fileHandle);
+    private static extern int Initialize(IntPtr fileHandle);
 
     [DllImport(NativeLibraryResolver.LmSensorsLibrary, EntryPoint = "sensors_cleanup")]
-    private static extern void SensorsCleanup();
+    private static extern void Cleanup();
+
+    [DllImport(NativeLibraryResolver.LmSensorsLibrary, EntryPoint = "sensors_get_detected_chips")]
+    private static extern IntPtr GetDetectedChips(IntPtr match, ref int nr);
 
 
     // https://github.com/paroj/sensors.py/blob/master/sensors.py
     // code /usr/include/sensors/sensors.h
+
 
     private void ThrowIfDisposed()
     {

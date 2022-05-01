@@ -21,7 +21,7 @@ namespace Tederean.Apius.Interop
 
     public const string LibCLibrary = "LibC Library";
 
-    private const string LibCLinuxLibraryName = "libc.so";
+    private const string LibCLinuxLibraryName = "libc";
 
 
 

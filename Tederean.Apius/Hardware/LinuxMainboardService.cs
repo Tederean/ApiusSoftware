@@ -64,7 +64,7 @@ namespace Tederean.Apius.Hardware
     {
       if (_lmSenors != null)
       {
-
+        //var chips = _lmSenors.GetDetectedChipNames();
       }
     }
 
