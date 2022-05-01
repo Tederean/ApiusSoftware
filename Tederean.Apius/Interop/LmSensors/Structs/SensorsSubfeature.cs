@@ -4,17 +4,18 @@ namespace Tederean.Apius.Interop.LmSensors
 {
 
   [StructLayout(LayoutKind.Sequential)]
-  public struct SensorsChipName
+  public struct SensorsSubfeature
   {
 
     [MarshalAs(UnmanagedType.LPStr)]
     public string? Name;
 
-    public SensorsBusId Bus;
+    public int Number;
 
-    public int Addr;
+    public SensorSubfeatureType Type;
 
-    [MarshalAs(UnmanagedType.LPStr)]
-    public string? Path;
+    public int Mapping;
+
+    public SensorSubfeatureMode Flags;
   }
 }

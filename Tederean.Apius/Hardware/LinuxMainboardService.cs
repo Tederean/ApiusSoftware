@@ -7,12 +7,17 @@ namespace Tederean.Apius.Hardware
   public class LinuxMainboardService : IMainboardService
   {
 
+    private readonly string[] CpuTemperatureDivers = new [] { "k10temp", "coretemp" };
+
+
     private readonly IRaplService? _raplService;
 
-    private readonly LmSensors? _lmSenors;
+    private readonly LmSensors? _lmSensors;
 
 
     private CpuLoadSample? _lastCpuLoadSample;
+
+    private CpuTemperatureModule[]? _cpuTemperatureModules;
 
 
     public string CpuName { get; }
@@ -20,7 +25,23 @@ namespace Tederean.Apius.Hardware
 
     public LinuxMainboardService(LmSensors? lmSenors)
     {
-      _lmSenors = lmSenors;
+      if (lmSenors != null)
+      {
+        var chips = lmSenors.GetDetectedChipNames().Where(chipName => CpuTemperatureDivers.Any(driverName => driverName.Equals(chipName.Name))).ToArray();
+
+        _cpuTemperatureModules = chips.Select(chip =>
+        {
+          var features = lmSenors.GetSensorFeatures(chip).Where(feature => feature.Type == SensorFeatureType.Temperature).ToArray();
+
+          var subfeatures = features.SelectMany(sensorFeature => lmSenors.GetSensorSubfeatures(chip, sensorFeature)).Where(subfeature => subfeature.Flags == SensorSubfeatureMode.Read).ToArray();
+
+          return new CpuTemperatureModule(chip, subfeatures);
+
+        }).ToArray();
+
+        _lmSensors = lmSenors;
+      }
+
 
       var cpuinfo = File.ReadAllLines("/proc/cpuinfo");
 
@@ -62,9 +83,14 @@ namespace Tederean.Apius.Hardware
 
     private void GetTemperatureValues(MainboardSensors mainboardSensors)
     {
-      if (_lmSenors != null)
+      if (_lmSensors != null && _cpuTemperatureModules != null)
       {
-        //var chips = _lmSenors.GetDetectedChipNames();
+        var temperatures = _cpuTemperatureModules.SelectMany(module => module.SensorsSubfeatures.Select(subfeature => _lmSensors.GetValue(module.SensorsChipName, subfeature))).ToArray();
+
+        if (temperatures.Any())
+        {
+          mainboardSensors.Temperature_C = new Sensor(temperatures.Max(), 0, 90);
+        }
       }
     }
 
@@ -127,5 +153,7 @@ namespace Tederean.Apius.Hardware
 
 
     private record class CpuLoadSample(long WorkJiffies, long TotalJiffies);
+
+    private record class CpuTemperatureModule(SensorsChipName SensorsChipName, SensorsSubfeature[] SensorsSubfeatures);
   }
 }
