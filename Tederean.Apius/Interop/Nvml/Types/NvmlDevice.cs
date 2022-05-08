@@ -1,4 +1,5 @@
-﻿namespace Tederean.Apius.Interop.Nvml
+﻿#if LINUX || WINDOWS
+namespace Tederean.Apius.Interop.Nvml
 {
 
   public class NvmlDevice
@@ -18,3 +19,4 @@
     }
   }
 }
+#endif

@@ -1,4 +1,5 @@
-﻿using Tederean.Apius.Interop.LibC;
+﻿#if LINUX
+using Tederean.Apius.Interop.LibC;
 using Tederean.Apius.Interop.LmSensors;
 
 namespace Tederean.Apius.Hardware
@@ -155,3 +156,4 @@ namespace Tederean.Apius.Hardware
     private record class CpuTemperatureModule(SensorsChipName SensorsChipName, SensorsFeature[] SensorsFeatures);
   }
 }
+#endif

@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿#if LINUX
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace Tederean.Apius.Interop.LmSensors
@@ -196,3 +197,4 @@ namespace Tederean.Apius.Interop.LmSensors
     }
   }
 }
+#endif

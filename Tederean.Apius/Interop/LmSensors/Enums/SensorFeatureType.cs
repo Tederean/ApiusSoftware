@@ -1,4 +1,5 @@
-﻿namespace Tederean.Apius.Interop.LmSensors
+﻿#if LINUX
+namespace Tederean.Apius.Interop.LmSensors
 {
 
   public enum SensorFeatureType
@@ -19,3 +20,4 @@
     Unknown = int.MaxValue,
   }
 }
+#endif

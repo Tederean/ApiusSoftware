@@ -1,4 +1,5 @@
-﻿using Tederean.Apius.Extensions;
+﻿#if LINUX || WINDOWS
+using Tederean.Apius.Extensions;
 using Tederean.Apius.Interop.Nvml;
 
 namespace Tederean.Apius.Hardware
@@ -68,3 +69,4 @@ namespace Tederean.Apius.Hardware
     }
   }
 }
+#endif

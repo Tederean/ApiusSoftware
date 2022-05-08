@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿#if LINUX
+using System.Diagnostics;
 
 namespace Tederean.Apius.Hardware
 {
@@ -119,3 +120,4 @@ namespace Tederean.Apius.Hardware
     }
   }
 }
+#endif

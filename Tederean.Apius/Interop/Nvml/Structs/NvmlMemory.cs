@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿#if LINUX || WINDOWS
+using System.Runtime.InteropServices;
 
 namespace Tederean.Apius.Interop.Nvml
 {
@@ -14,3 +15,4 @@ namespace Tederean.Apius.Interop.Nvml
     public ulong UsedBytes { get; } // Allocated FB memory(in bytes). Note that the driver/GPU always sets aside a small amount of memory for bookkeeping.
   }
 }
+#endif

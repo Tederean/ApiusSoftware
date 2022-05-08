@@ -1,4 +1,5 @@
-﻿namespace Tederean.Apius.Interop.Nvml
+﻿#if LINUX || WINDOWS
+namespace Tederean.Apius.Interop.Nvml
 {
 
   public enum NvmlTemperatureSensor
@@ -7,3 +8,4 @@
     Count
   }
 }
+#endif

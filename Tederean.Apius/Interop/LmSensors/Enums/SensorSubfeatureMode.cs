@@ -1,4 +1,5 @@
-﻿namespace Tederean.Apius.Interop.LmSensors
+﻿#if LINUX
+namespace Tederean.Apius.Interop.LmSensors
 {
 
   public enum SensorSubfeatureMode : uint
@@ -8,3 +9,4 @@
     ComputeMapping = 4,
   }
 }
+#endif

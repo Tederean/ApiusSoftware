@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿#if LINUX
+using System.Runtime.InteropServices;
 
 namespace Tederean.Apius.Interop.LmSensors
 {
@@ -18,3 +19,4 @@ namespace Tederean.Apius.Interop.LmSensors
     public string? Path;
   }
 }
+#endif

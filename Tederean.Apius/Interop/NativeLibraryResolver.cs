@@ -24,6 +24,10 @@ namespace Tederean.Apius.Interop
     private const string LibCLinuxLibraryName = "libc";
 
 
+    public const string Kernel32Library = "Kernel32 Library";
+
+    private const string Kernel32WindowsLibraryName = "kernel32.dll";
+
 
     public static void Initialize()
     {
@@ -38,6 +42,11 @@ namespace Tederean.Apius.Interop
         if (libraryName == NvmlLibrary && NativeLibrary.TryLoad(NvmlWindowsLibraryName, out IntPtr nvmlHandle))
         {
           return nvmlHandle;
+        }
+
+        if (libraryName == Kernel32Library && NativeLibrary.TryLoad(Kernel32WindowsLibraryName, out IntPtr kernel32Handle))
+        {
+          return kernel32Handle;
         }
       }
 

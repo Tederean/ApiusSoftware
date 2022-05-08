@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿#if LINUX
+using System.Runtime.InteropServices;
 
 namespace Tederean.Apius.Interop.LibC
 {
@@ -13,3 +14,4 @@ namespace Tederean.Apius.Interop.LibC
     public static bool IsRoot() => GetUid() == 0;
   }
 }
+#endif

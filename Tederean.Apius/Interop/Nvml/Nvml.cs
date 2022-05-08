@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿#if LINUX || WINDOWS
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Text;
 using Tederean.Apius.Extensions;
@@ -244,3 +245,4 @@ namespace Tederean.Apius.Interop.Nvml
     }
   }
 }
+#endif

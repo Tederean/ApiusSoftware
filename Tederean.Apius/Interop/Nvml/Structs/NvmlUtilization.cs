@@ -1,4 +1,5 @@
-﻿namespace Tederean.Apius.Interop.Nvml
+﻿#if LINUX || WINDOWS
+namespace Tederean.Apius.Interop.Nvml
 {
 
   public struct NvmlUtilization
@@ -9,3 +10,4 @@
     public uint Memory { get; } // Percent of time over the past sample period during which global(device) memory was being read or written.
   }
 }
+#endif

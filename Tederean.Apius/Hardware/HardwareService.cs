@@ -1,32 +1,41 @@
-﻿using Tederean.Apius.Interop.LmSensors;
-using Tederean.Apius.Interop.Nvml;
-
-namespace Tederean.Apius.Hardware
+﻿namespace Tederean.Apius.Hardware
 {
 
   public class HardwareService : IHardwareService
   {
 
-    private Nvml? _nvml;
+#if LINUX || WINDOWS
+    private Interop.Nvml.Nvml? _nvml;
+#endif
 
-    private LmSensors? _lmSensors;
+#if LINUX
+    private Interop.LmSensors.LmSensors? _lmSensors;
+#endif
 
 
-    public IMainboardService? MainboardService { get; set; }
+    public IMainboardService? MainboardService { get; private set; }
 
-    public IGraphicsCardService? GraphicsCardService { get; set; }
+    public IGraphicsCardService? GraphicsCardService { get; private set; }
 
 
     public HardwareService()
     {
-      if (OperatingSystem.IsLinux())
-      {
-        LmSensors.TryCreateInstance(out _lmSensors);
+#if LINUX
+      Interop.LmSensors.LmSensors.TryCreateInstance(out _lmSensors);
 
-        MainboardService = new LinuxMainboardService(_lmSensors);
-      }
+      MainboardService = new LinuxMainboardService(_lmSensors);
+#endif
 
-      if (Nvml.TryCreateInstance(out _nvml))
+
+#if WINDOWS
+#pragma warning disable CA1416 // Validate platform compatibility
+      MainboardService = new WindowsMainboardService();
+#pragma warning restore CA1416 // Validate platform compatibility
+#endif
+
+
+#if LINUX || WINDOWS
+      if (Interop.Nvml.Nvml.TryCreateInstance(out _nvml))
       {
         var firstGraphicsCard = _nvml.DeviceGetHandles().FirstOrDefault();
 
@@ -35,12 +44,18 @@ namespace Tederean.Apius.Hardware
           GraphicsCardService = new ProprietaryNvidiaGraphicsCardService(_nvml, firstGraphicsCard);
         }
       }
+#endif
     }
 
     public void Dispose()
     {
+#if LINUX || WINDOWS
       _nvml?.Dispose();
+#endif
+
+#if LINUX
       _lmSensors?.Dispose();
+#endif
 
       MainboardService?.Dispose();
       GraphicsCardService?.Dispose();
