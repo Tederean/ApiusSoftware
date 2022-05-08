@@ -33,9 +33,7 @@ namespace Tederean.Apius.Hardware
         {
           var features = lmSenors.GetSensorFeatures(chip).Where(feature => feature.Type == SensorFeatureType.Temperature).ToArray();
 
-          var subfeatures = features.SelectMany(sensorFeature => lmSenors.GetSensorSubfeatures(chip, sensorFeature)).Where(subfeature => subfeature.Flags == SensorSubfeatureMode.Read).ToArray();
-
-          return new CpuTemperatureModule(chip, subfeatures);
+          return new CpuTemperatureModule(chip, features);
 
         }).ToArray();
 
@@ -85,7 +83,7 @@ namespace Tederean.Apius.Hardware
     {
       if (_lmSensors != null && _cpuTemperatureModules != null)
       {
-        var temperatures = _cpuTemperatureModules.SelectMany(module => module.SensorsSubfeatures.Select(subfeature => _lmSensors.GetValue(module.SensorsChipName, subfeature))).ToArray();
+        var temperatures = _cpuTemperatureModules.SelectMany(module => module.SensorsFeatures.Select(feature => _lmSensors.GetValue(module.SensorsChipName, feature))).ToArray();
 
         if (temperatures.Any())
         {
@@ -154,6 +152,6 @@ namespace Tederean.Apius.Hardware
 
     private record class CpuLoadSample(long WorkJiffies, long TotalJiffies);
 
-    private record class CpuTemperatureModule(SensorsChipName SensorsChipName, SensorsSubfeature[] SensorsSubfeatures);
+    private record class CpuTemperatureModule(SensorsChipName SensorsChipName, SensorsFeature[] SensorsFeatures);
   }
 }

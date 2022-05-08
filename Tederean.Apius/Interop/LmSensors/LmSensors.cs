@@ -126,7 +126,7 @@ namespace Tederean.Apius.Interop.LmSensors
       }
     }
 
-    public double GetValue(SensorsChipName sensorsChipName, SensorsSubfeature sensorSubfeature)
+    public double GetValue(SensorsChipName sensorsChipName, SensorsFeature sensorFeature)
     {
       ThrowIfDisposed();
 
@@ -137,7 +137,7 @@ namespace Tederean.Apius.Interop.LmSensors
         Marshal.StructureToPtr(sensorsChipName, sensorsChipNamePointer, false);
 
         var value = 0.0;
-        var result = GetValue(sensorsChipNamePointer, sensorSubfeature.Number, ref value);
+        var result = GetValue(sensorsChipNamePointer, sensorFeature.Number, ref value);
 
         if (result < 0)
         {
