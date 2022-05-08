@@ -20,6 +20,10 @@ namespace Tederean.Apius
     public static async Task Main(string[] args)
     {
 #if DEBUG
+#if WINDOWS
+      args = new[] { "COM3" };
+#endif
+
       if (!Debugger.IsAttached)
       {
         while (!Debugger.IsAttached)

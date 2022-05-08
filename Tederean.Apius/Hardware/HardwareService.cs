@@ -28,9 +28,7 @@
 
 
 #if WINDOWS
-#pragma warning disable CA1416 // Validate platform compatibility
       MainboardService = new WindowsMainboardService();
-#pragma warning restore CA1416 // Validate platform compatibility
 #endif
 
 
